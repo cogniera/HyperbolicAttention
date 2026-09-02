@@ -1,0 +1,166 @@
+{
+  "radial_degeneracy": {
+    "rows": [
+      {
+        "depth_a": 0,
+        "depth_b": 4,
+        "true_d_hyp": 0.3088462162161643,
+        "notebook_score": 0.0,
+        "sq_lorentzian": 0.09614660730848357
+      },
+      {
+        "depth_a": 0,
+        "depth_b": 8,
+        "true_d_hyp": 0.658805265483454,
+        "notebook_score": 0.0,
+        "sq_lorentzian": 0.4499513551624261
+      },
+      {
+        "depth_a": 0,
+        "depth_b": 14,
+        "true_d_hyp": 1.2266406984899965,
+        "notebook_score": 0.0,
+        "sq_lorentzian": 1.703032004946282
+      },
+      {
+        "depth_a": 2,
+        "depth_b": 14,
+        "true_d_hyp": 1.0784112207285568,
+        "notebook_score": 0.0,
+        "sq_lorentzian": 1.280140316585845
+      },
+      {
+        "depth_a": 6,
+        "depth_b": 14,
+        "true_d_hyp": 0.746881873617528,
+        "notebook_score": 0.0,
+        "sq_lorentzian": 0.5842509738936137
+      }
+    ],
+    "max_notebook_score_on_radial_pairs": 0.0,
+    "claim": "score is identically 0 for every ancestor-descendant pair"
+  },
+  "norm_substitution": [
+    {
+      "norm": 0.25,
+      "q0_over_norm": 4.123105625617661
+    },
+    {
+      "norm": 0.5,
+      "q0_over_norm": 2.23606797749979
+    },
+    {
+      "norm": 1.0,
+      "q0_over_norm": 1.4142135623730951
+    },
+    {
+      "norm": 2.0,
+      "q0_over_norm": 1.118033988749895
+    },
+    {
+      "norm": 4.0,
+      "q0_over_norm": 1.0307764064044151
+    },
+    {
+      "norm": 8.0,
+      "q0_over_norm": 1.0077822185373186
+    }
+  ],
+  "rank_agreement": {
+    "notebook_vs_true": 0.9867950286638061,
+    "sq_lorentzian_vs_true": 1.0
+  },
+  "curvature_budget": {
+    "alpha": 0.1,
+    "table": [
+      {
+        "depth": 0,
+        "spatial_norm": 1.0,
+        "geodesic_r": 0.881373587019543
+      },
+      {
+        "depth": 2,
+        "spatial_norm": 1.2214027581601699,
+        "geodesic_r": 1.0296030647809826,
+        "delta_r_per_level": 0.07411473888071979
+      },
+      {
+        "depth": 4,
+        "spatial_norm": 1.4918246976412703,
+        "geodesic_r": 1.190219803235706,
+        "delta_r_per_level": 0.08030836922736173
+      },
+      {
+        "depth": 6,
+        "spatial_norm": 1.822118800390509,
+        "geodesic_r": 1.3611324118920118,
+        "delta_r_per_level": 0.08545630432815288
+      },
+      {
+        "depth": 8,
+        "spatial_norm": 2.225540928492468,
+        "geodesic_r": 1.5401788525029967,
+        "delta_r_per_level": 0.08952322030549242
+      },
+      {
+        "depth": 10,
+        "spatial_norm": 2.718281828459045,
+        "geodesic_r": 1.725382558852315,
+        "delta_r_per_level": 0.09260185317465919
+      },
+      {
+        "depth": 12,
+        "spatial_norm": 3.320116922736548,
+        "geodesic_r": 1.9150918412581173,
+        "delta_r_per_level": 0.0948546412029011
+      },
+      {
+        "depth": 14,
+        "spatial_norm": 4.055199966844675,
+        "geodesic_r": 2.10801428550954,
+        "delta_r_per_level": 0.09646122212571129
+      }
+    ],
+    "total_radius_span_depth_0_to_14": 1.2266406984899967,
+    "required_delta_r_per_level": {
+      "2": 0.6931471805599453,
+      "3": 1.0986122886681098,
+      "4": 1.3862943611198906,
+      "6": 1.791759469228055
+    },
+    "shortfall_vs_b3": 10.986122886681096
+  },
+  "layernorm_collapse": {
+    "hidden_dim": 16,
+    "radius_before": [
+      1.684675865991905,
+      3.341996084040739,
+      3.609484431168938,
+      3.012543730668388,
+      3.6782636759035743,
+      2.9382789057640717
+    ],
+    "radius_after": [
+      2.0947125472611012,
+      2.0947125472611012,
+      2.0947125472611012,
+      2.0947125472611012,
+      2.0947125472611012,
+      2.0947125472611012
+    ],
+    "norm_after_is_sqrt_n": 4.0,
+    "fixed_radius": 2.0947125472611012,
+    "spread_after": 0.0
+  },
+  "isometry": {
+    "rotation_O_n": {
+      "max_abs_distance_change": 4.440892098500626e-15
+    },
+    "generic_dense": {
+      "max_abs_distance_change": 2.711644921154817
+    },
+    "uniform_scaling_1.5": {
+      "max_abs_distance_change": 0.7957285878532616
+    }
+  }
+}
