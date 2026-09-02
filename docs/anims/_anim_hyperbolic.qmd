@@ -1,0 +1,176 @@
+```{=html}
+<div class="hyp-anim" id="hypAnim">
+  <style>
+    .hyp-anim {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+    border: 1px solid var(--rule, #e2e2e2);
+    border-radius: 6px;
+    padding: 1rem 1rem .75rem;
+    margin: 1rem 0 1.6rem;
+    }
+
+    .hyp-anim .panes {
+        display: flex;
+        gap: .8rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hyp-anim .pane {
+        text-align: center;
+    }
+
+    .hyp-anim canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .hyp-anim .pane h4 {
+        margin: .2rem 0 .1rem;
+        font-size: .85rem;
+        font-weight: 600;
+        color: var(--fg, #1a1a1a);
+    }
+
+    .hyp-anim .count {
+        font-size: .8rem;
+        color: var(--muted, #666);
+        font-variant-numeric: tabular-nums;
+        min-height: 1.2em;
+    }
+
+    .hyp-anim .count b {
+        color: var(--fg, #1a1a1a);
+    }
+
+    .hyp-anim .ctrl {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        margin-top: .6rem;
+        font-size: .8rem;
+        color: var(--muted, #666);
+    }
+
+    .hyp-anim input[type=range] {
+        flex: 1;
+        accent-color: var(--accent, #8a4b2a);
+    }
+
+    .hyp-anim button {
+        font: inherit;
+        color: var(--fg, #1a1a1a);
+        background: none;
+        border: 1px solid var(--rule, #e2e2e2);
+        border-radius: 4px;
+        padding: .15rem .6rem;
+        cursor: pointer;
+    }
+
+    .anim-note {
+        font-size: .9rem;
+    }
+  </style>
+ 
+  <div class="panes">
+    <div class="pane">
+      <h4>Euclidean plane</h4>
+      <canvas id="hypEu" width="560" height="560" style="width:230px"></canvas>
+      <div class="count" id="hypEuCount"></div>
+    </div>
+    <div class="pane">
+      <h4>Hyperbolic plane (Poincar&eacute; disk)</h4>
+      <canvas id="hypHy" width="560" height="560" style="width:230px"></canvas>
+      <div class="count" id="hypHyCount"></div>
+    </div>
+  </div>
+  <div class="ctrl">
+    <button id="hypPlay" aria-label="play or pause">&#9654;</button>
+    <span>radius&nbsp;r</span>
+    <input type="range" id="hypR" min="0.5" max="6" step="0.02" value="2"
+           aria-label="hyperbolic radius r">
+    <span id="hypRVal" style="min-width:2.5em; text-align:right">2.00</span>
+  </div>
+ 
+  <script>
+    (function () {
+      var SPACING = 0.4, RMAX = 6;
+      var eu = document.getElementById("hypEu"), hy = document.getElementById("hypHy");
+      var euCount = document.getElementById("hypEuCount"),
+          hyCount = document.getElementById("hypHyCount");
+      var slider = document.getElementById("hypR"),
+          rVal = document.getElementById("hypRVal"),
+          play = document.getElementById("hypPlay");
+
+      function colors() {
+          var cs = getComputedStyle(document.body);
+          var get = function (name, fb) {
+              var v = cs.getPropertyValue(name).trim(); return v || fb;
+          };
+          return {
+              fg: get("--fg", "#1a1a1a"), muted: get("--muted", "#666"),
+              rule: get("--rule", "#e2e2e2"), accent: get("--accent", "#8a4b2a")
+          };
+      }
+
+      function drawPane(canvas, r, toEuclid, boundary) {
+          var c = colors(), ctx = canvas.getContext("2d");
+          var W = canvas.width, cx = W / 2, R = W / 2 - 8;
+          ctx.clearRect(0, 0, W, W);
+          ctx.lineWidth = 2;
+
+          if (boundary) {
+              ctx.strokeStyle = c.fg; ctx.beginPath();
+              ctx.arc(cx, cx, R, 0, 2 * Math.PI); ctx.stroke();
+          }
+          ctx.strokeStyle = c.rule;
+          for (var k = 1; k <= RMAX; k++) {
+              ctx.beginPath(); ctx.arc(cx, cx, toEuclid(k) * R, 0, 2 * Math.PI); ctx.stroke();
+          }
+          var rr = toEuclid(r) * R;
+          ctx.strokeStyle = c.accent; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.arc(cx, cx, rr, 0, 2 * Math.PI); ctx.stroke();
+          return { ctx: ctx, cx: cx, rr: rr, accent: c.accent };
+      }
+
+      function dots(p, n) {
+          p.ctx.fillStyle = p.accent;
+          var size = n > 900 ? 1.6 : (n > 300 ? 2.4 : 3.5);
+          for (var i = 0; i < n; i++) {
+              var a = 2 * Math.PI * i / n;
+              p.ctx.beginPath();
+              p.ctx.arc(p.cx + p.rr * Math.cos(a), p.cx + p.rr * Math.sin(a), size, 0, 2 * Math.PI);
+              p.ctx.fill();
+          }
+      }
+
+      function render() {
+          var r = parseFloat(slider.value);
+          rVal.textContent = r.toFixed(2);
+          var nE = Math.max(1, Math.round(2 * Math.PI * r / SPACING));
+          var nH = Math.max(1, Math.round(2 * Math.PI * Math.sinh(r) / SPACING));
+          var pE = drawPane(eu, r, function (x) { return x / RMAX; }, false);
+          var pH = drawPane(hy, r, function (x) { return Math.tanh(x / 2); }, true);
+          dots(pE, nE); dots(pH, nH);
+          euCount.innerHTML = "circumference 2&pi;r ;&nbsp; <b>" + nE + "</b> points";
+          hyCount.innerHTML = "circumference 2&pi;&middot;sinh&thinsp;r ;&nbsp; <b>" + nH + "</b> points";
+      }
+
+      var timer = null;
+      play.addEventListener("click", function () {
+          if (timer) { clearInterval(timer); timer = null; play.innerHTML = "&#9654;"; return; }
+          play.innerHTML = "&#10074;&#10074;";
+          timer = setInterval(function () {
+              var r = parseFloat(slider.value) + 0.02;
+              if (r > RMAX) r = 0.5;
+              slider.value = r; render();
+          }, 40);
+      });
+      slider.addEventListener("input", render);
+      if (window.matchMedia)
+          window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+      render();
+    })();
+  </script>
+</div>
+```

@@ -85,6 +85,47 @@ def pull(path, fmt="{:.4f}", default="**[PENDING]**"):
 **Status** Under construction, section by section. Anything marked **[pending]** is a number whose producing script has not been run yet.
 :::
 
+## Goal  
+The goal for this project is a small transformer that operates on the hyperbolic space, trained on ASTs of python code. It is a build project rather than research or comparison project, but comparison with naive implementations is done as a benchmarking process later in the project.
+
+## Background Story 
+
+Now you might be wondering how a second-year computer engineering student at the
+University of Waterloo ended up representing code in hyperbolic space and
+simulating attention over those embeddings. Here's how it happened.
+
+It started with a YouTube video from Quanta Magazine [-@quanta2025breakthroughs].
+One of its three segments covered Nalini Anantharaman and Laura Monk's proof
+[-@anantharaman2024spectral] that almost every sufficiently complex hyperbolic
+surface has a near-optimal spectral gap, built on techniques Maryam Mirzakhani
+developed for studying random hyperbolic surfaces [-@mirzakhani2013growth].
+
+I couldn't follow the theory, but the geometry discussed in that video stuck with me : a
+space where parallel lines never meet, and circles hold far more volume than
+they "should".
+
+{{< include anims/_anim_hyperbolic.qmd >}}
+
+That curiosity led me deeper into hyperbolic geometry and eventually to Nickel
+and Kiela's paper on Poincaré embeddings [@nickel2017poincare]. They embedded
+hierarchical graph data (WordNet's hypernym tree and several social networks)
+into the Poincaré ball, and the result blew my mind : 
+The hierarchies that take Euclidean space hundreds of dimensions to represent fit into just 5 to 10
+dimensions in hyperbolic space.
+
+That raised an obvious question: 
+what kind of data is both hierarchical and abundant? 
+I came to the conclusion that Code is inherently hierarchical (objects contain sub-objects,
+functions contain sub-functions that call other sub-functions). So I ran an
+initial experiment on the Python standard library and got promising-looking
+results, though as I'd later discover, I was making mathematical errors I
+didn't yet know to look for. After a long stretch spent analyzing those
+results, I tracked the errors down and restarted the project, this time
+I aim at formally verifying the properties I rely on before implementing any of the
+equations I find in the literature.
+
+{{< include anims/_anim_AST.qmd >}} 
+
 ## References
 
 ::: {#refs}

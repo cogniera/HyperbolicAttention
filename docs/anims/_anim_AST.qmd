@@ -1,0 +1,210 @@
+```{=html}
+<div class="ast-anim" id="astAnim">
+  <style>
+        .ast-anim {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+        border: 1px solid var(--rule, #e2e2e2);
+        border-radius: 6px;
+        padding: 1rem;
+        margin: 1rem 0 1.6rem;
+        display: flex;
+        gap: 1.4rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        /* depth palette, restepped for dark below */
+        --d0: #2a78d6;
+        --d1: #eb6834;
+        --d2: #1baf7a;
+        --d3: #eda100;
+        --d4: #e87ba4;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ast-anim {
+                --d0: #3987e5;
+                --d1: #d95926;
+                --d2: #199e70;
+                --d3: #c98500;
+                --d4: #d55181;
+            }
+        }
+
+        .ast-anim pre.code {
+            margin: 0;
+            font-family: "SF Mono", Menlo, Consolas, monospace;
+            font-size: .82rem;
+            line-height: 1.5;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .ast-anim .ln {
+            display: block;
+            padding: .1rem .6rem .1rem .5rem;
+            cursor: default;
+            border-left: 3px solid transparent;
+            border-radius: 2px;
+            color: var(--fg, #1a1a1a);
+            white-space: pre;
+        }
+
+        .ast-anim .legend {
+            flex-basis: 100%;
+            text-align: center;
+            font-size: .75rem;
+            color: var(--muted, #666);
+        }
+
+        .ast-anim .legend span {
+            display: inline-block;
+            margin: 0 .5rem;
+        }
+
+        .ast-anim .legend i {
+            display: inline-block;
+            width: .65em;
+            height: .65em;
+            border-radius: 50%;
+            margin-right: .3em;
+        }
+
+        .ast-anim svg text {
+            font-size: 12px;
+            fill: var(--fg, #1a1a1a);
+        }
+
+        .ast-anim svg .edge {
+            stroke: var(--rule, #999);
+            stroke-width: 1.5;
+        }
+
+        .ast-anim .node circle {
+            stroke: none;
+        }
+
+        .ast-anim .ln,
+        .ast-anim .node,
+        .ast-anim .edge {
+            transition: opacity .15s;
+        }
+
+        .ast-anim.focus .ln,
+        .ast-anim.focus .node,
+        .ast-anim.focus .edge {
+            opacity: .3;
+        }
+
+        .ast-anim.focus .ln.hl,
+        .ast-anim.focus .node.hl,
+        .ast-anim.focus .edge.hl {
+            opacity: 1;
+        }
+
+        .ast-anim .ln.hl {
+            background: color-mix(in srgb, var(--rule, #e2e2e2) 45%, transparent);
+        }
+  </style>
+ 
+  <pre class="code" aria-label="python example">
+
+<span class="ln" data-n="module"><span style="color:var(--muted,#666)"># module 1 depth 0</span></span>
+<span class="ln" data-n="def" style="border-color:var(--d1)">def norm(vec):</span>
+<span class="ln" data-n="assign" style="border-color:var(--d2)">    total = 0</span>
+<span class="ln" data-n="for" style="border-color:var(--d2)">    for x in vec:</span>
+<span class="ln" data-n="if" style="border-color:var(--d3)">        if x != 0:</span>
+<span class="ln" data-n="aug" style="border-color:var(--d4)">            total += x * x</span>
+<span class="ln" data-n="ret" style="border-color:var(--d2)">    return sqrt(total)</span></pre>
+ 
+  <svg viewBox="0 0 460 300" width="430" role="img" aria-label="syntax tree of the example">
+    <g id="astEdges"></g><g id="astNodes"></g>
+  </svg>
+ 
+  <div class="legend" id="astLegend"></div>
+ 
+  <script>
+    (function () {
+        var root = document.getElementById("astAnim");
+        
+        var NODES = [
+            ["module", "module", 0, 230, 28, null],
+            ["def", "def norm", 1, 230, 88, "module"],
+            ["assign", "total = 0", 2, 80, 152, "def"],
+            ["for", "for x in vec", 2, 230, 152, "def"],
+            ["ret", "return", 2, 380, 152, "def"],
+            ["if", "if x != 0", 3, 230, 216, "for"],
+            ["sqrt", "sqrt(total)", 3, 380, 216, "ret"],
+            ["aug", "total += x*x", 4, 230, 280, "if"]
+        ];
+
+        var byName = {}, kids = {};
+        NODES.forEach(function (n) { byName[n[0]] = n; kids[n[0]] = []; });
+        NODES.forEach(function (n) { if (n[5]) kids[n[5]].push(n[0]); });
+        
+        var lineOf = { sqrt: "ret" };
+
+        var svgNS = "http://www.w3.org/2000/svg";
+        var gE = document.getElementById("astEdges"),
+            gN = document.getElementById("astNodes");
+        NODES.forEach(function (n) {
+            if (n[5]) {
+                var p = byName[n[5]], e = document.createElementNS(svgNS, "line");
+                e.setAttribute("x1", p[3]); e.setAttribute("y1", p[4] + 9);
+                e.setAttribute("x2", n[3]); e.setAttribute("y2", n[4] - 9);
+                e.setAttribute("class", "edge"); e.setAttribute("data-to", n[0]);
+                gE.appendChild(e);
+            }
+            var g = document.createElementNS(svgNS, "g");
+            g.setAttribute("class", "node"); g.setAttribute("data-n", n[0]);
+            var c = document.createElementNS(svgNS, "circle");
+            c.setAttribute("cx", n[3]); c.setAttribute("cy", n[4]); c.setAttribute("r", 8);
+            c.setAttribute("fill", "var(--d" + n[2] + ")");
+            var t = document.createElementNS(svgNS, "text");
+            t.setAttribute("x", n[3] + 13); t.setAttribute("y", n[4] + 4);
+            if (n[0] === "ret" || n[0] === "sqrt") {           
+                t.setAttribute("x", n[3] - 13); t.setAttribute("text-anchor", "end");
+            }
+            t.textContent = n[1];
+            g.appendChild(c); g.appendChild(t); gN.appendChild(g);
+        });
+
+        var legend = document.getElementById("astLegend");
+        for (var d = 0; d <= 4; d++)
+            legend.innerHTML += "<span><i style='background:var(--d" + d + ")'></i>depth " + d + "</span>";
+
+        function ancestors(name) {
+            var out = [];
+            while (name) { out.push(name); name = byName[name][5]; }
+            return out;
+        }
+        function subtree(name) {
+            var out = [name];
+            kids[name].forEach(function (k) { out = out.concat(subtree(k)); });
+            return out;
+        }
+        function highlight(name) {
+            var set = {};
+            ancestors(name).forEach(function (m) { set[m] = 1; });
+            subtree(name).forEach(function (m) { set[m] = 1; });
+            root.classList.add("focus");
+            root.querySelectorAll(".node, .ln").forEach(function (el) {
+                var m = el.getAttribute("data-n");
+                el.classList.toggle("hl", !!set[m] || !!set[lineOf[m]]);
+            });
+            root.querySelectorAll(".edge").forEach(function (el) {
+                el.classList.toggle("hl", !!set[el.getAttribute("data-to")]);
+            });
+        }
+        function clear() {
+            root.classList.remove("focus");
+            root.querySelectorAll(".hl").forEach(function (el) { el.classList.remove("hl"); });
+        }
+        root.querySelectorAll(".ln, .node").forEach(function (el) {
+            el.addEventListener("pointerenter", function () { highlight(el.getAttribute("data-n")); });
+            el.addEventListener("pointerleave", clear);
+        });
+        })();
+  </script>
+</div>
+```
