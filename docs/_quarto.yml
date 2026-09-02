@@ -1,0 +1,23 @@
+# Author: Paarth Sharma
+# File Name: _quarto.yml
+# Project Name: Hyperbolic Attention
+# Creation Date: 2nd september 2026
+# Modification Date: 2nd september 2026
+# Description: Quarto site config
+
+project:
+  type: default
+  output-dir: _site
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    html-math-method: katex
+    theme: [cosmo, styles.css]
+    code-tools: false
+    code-block-bg: true
+    fig-width: 7
+    fig-height: 4
+
+bibliography: references.bib

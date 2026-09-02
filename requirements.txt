@@ -1,0 +1,11 @@
+# basic python libraries pinned for the evidence scripts later on 
+numpy==2.4.4
+scipy==1.17.1
+tree-sitter==0.26.0
+tree-sitter-python==0.25.0
+transformers==4.57.1
+datasets==4.4.1
+jax==0.10.2
+flax==0.12.8
+optax==0.2.8
+jupyter==1.1.1

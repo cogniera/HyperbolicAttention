@@ -1,0 +1,91 @@
+<!--
+Author : Paarth Sharma
+File Name : index.qmd
+Project Name : Hyperbolic Attention 
+Creation Date : 2nd September 2026
+Modification Date : 2nd September 2026 
+Desc : Documentation file for the project hosting formulas , references , animations , proof citations 
+-->
+
+---
+title: "Hyperbolic Attention"
+subtitle: "Making a Mini Transformer model in hyperbolic geometry trained on Python Code "
+author: "Paarth"
+date: September 2 2026
+format:
+  html:
+    include-in-header:
+      text: |
+        <style>
+          /* Force long bibliography URLs to wrap cleanly within the page container */
+          #refs, #refs a {
+            overflow-wrap: break-word;
+            word-break: break-word;
+          }
+        </style>
+---
+
+<!-- Global configuration and helper function setup -->
+```{python}
+#| echo : false
+#| output : false
+# Hide setup execution and imports from the final rendered HTML document
+
+import json, pathlib, math
+
+# Global registry storing evaluation metrics
+E = {}
+
+# Load evaluation results from current run and archived results from previous runs 
+for d in (pathlib.Path("evidence/out")), (pathlib.Path("../archive/evidence/out")):
+    if d.exists() :
+        for p in sorted(d.glob("*.json")):
+            # setdefault preserves primary evidence/out values if duplicate files exist in archive
+            E.setdefault(p.stem, json.load(open(p)))
+
+
+def pull(path, fmt="{:.4f}", default="**[PENDING]**"):
+    """
+    Look up a value by a /-separated path in the global object E.
+    
+    Traverses nested dicts and lists and then formats numeric 
+    results or returns a fallback placeholder if the producing script hasn't run yet
+
+    Args:
+        path (str): Slash-separated path 
+        fmt (str, optional): Python string format specifier
+        default (str, optional): Fallback indicator for missing metrics
+
+    Returns:
+        str: Formatted metric value or default placeholder string.
+    """
+
+    cur = E
+
+    for k in path.split("/"): 
+        if isinstance(cur, list):
+            try:
+                cur = cur[int(k)]
+            except (ValueError, IndexError):
+                return default
+        elif isinstance(cur, dict) and k in cur:
+            cur = cur[k]
+        else:
+            return default
+
+    # Safely format numeric outputs
+    try:
+        return fmt.format(cur)
+    except (ValueError, TypeError):
+        return str(cur)
+
+```
+
+::: {.pending}
+**Status** Under construction, section by section. Anything marked **[pending]** is a number whose producing script has not been run yet.
+:::
+
+## References
+
+::: {#refs}
+:::

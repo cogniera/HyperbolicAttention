@@ -1,3 +1,12 @@
+<!-- 
+Author : Paarth Sharma 
+File Name : README.md
+Project Name : Hyperbolic Attention
+Creation Date : 2nd September 2026
+Modification Date : 2nd September 2026
+Description : README file describing the project and giving the reader a way to navigate the repo 
+-->
+
 # Hyperbolic Attention 
 
 A small transformer whose attention opperates on a lorentz hyperboloid , trained on python source code parsed as AST's to encode the graph structure of code onto a hyperboloid.  The exponential space on a hyperbolic geometry is the benefit that is required for deeply nested ASTs . 
@@ -13,8 +22,8 @@ src/
         lorentz.py - the python library file with geometry operations for the hyperboloid model implemented as classes or functions making use of OOP and functional programming 
     /model 
         layers.py - the linear layer , residual , normalization 
-        model.py - embeddings , blocks , attention heads , loss 
-        data.py - tokenizer , tree-parser 
+        model.py  - embeddings , blocks , attention heads , loss 
+        data.py   - tokenizer , tree-parser 
     /kernels 
         flash_lorentz.py - custom pallas kernels for later after making a reference implementation in JAX
 tests/
@@ -28,6 +37,16 @@ proofs/
         same as lean
 results/ 
     this is going to contain the results from the runs 
+docs/
+    evidence/ 
+        scripts/
+            scripts for evaluation 
+        out/
+            outputs of those scripts 
+    index.qmd      - the main file for the static site containing all the important , math , references , proof references , animations 
+    references.bib - the file containing all the references for the papers, textbooks, articles 
+    styles.css     - css file containing the theme and color preferences 
+    _quarto.yml    - config file for running "quarto preview" and "quarto render"
 archive/ (the failed attempt from before for reference)
 ```
 

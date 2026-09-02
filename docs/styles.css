@@ -1,0 +1,135 @@
+/*-- scss:rules --*/
+
+/*
+Author : Paarth Sharma
+File Name : style.css
+Project Name : Hyperbolic Attention 
+Creation Date : 2nd september 26
+Modification Date : 2nd september 26
+Description : style file for the theme and color preferences for the static page
+*/
+
+/*default color and theme parameters for the documentation*/
+:root {
+  --fg: #1a1a1a;
+  --muted: #666666;
+  --rule: #e2e2e2;
+  --accent: #8a4b2a;
+  --code-bg: #f7f7f5;
+}
+
+body {
+  font-family: "Charter", "Bitstream Charter", "Iowan Old Style", Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--fg);
+}
+
+main {
+  max-width: 42rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  margin-bottom: 0.2em;
+  font-size: 1.9rem;
+}
+
+h2 {
+  margin-top: 2.4em;
+  padding-top: 0.6em;
+  border-top: 1px solid var(--rule);
+  font-size: 1.35rem;
+}
+
+h3 {
+  margin-top: 1.8em;
+  color: #333333;
+  font-size: 1.08rem;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 2px;
+}
+
+code,
+pre {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.86rem;
+}
+
+pre {
+  padding: 0.85em 1em;
+  overflow-x: auto;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+
+table {
+  margin: 1.4em 0;
+  font-size: 0.9rem;
+}
+
+thead th {
+  border-bottom: 1.5px solid #333333;
+  font-weight: 600;
+}
+
+blockquote {
+  margin-left: 0;
+  padding-left: 1em;
+  border-left: 3px solid var(--rule);
+  color: var(--muted);
+  font-style: italic;
+}
+
+.katex {
+  font-size: 1.02em;
+}
+
+/* Marker for evidence not yet filled in */
+.pending {
+  margin: 1.2em 0;
+  padding: 0.7em 1em;
+  border-left: 3px solid #d39e00;
+  background: #fff3cd;
+  font-family: sans-serif;
+  font-size: 0.9rem;
+}
+
+/* Dark mode preferences */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg: #e4e4e4;
+    --muted: #999999;
+    --rule: #333333;
+    --accent: #d59a6a;
+    --code-bg: #1c1c1c;
+  }
+
+  body {
+    background: #131313;
+  }
+
+  h3 {
+    color: #cccccc;
+  }
+
+  thead th {
+    border-bottom-color: #888888;
+  }
+
+  .pending {
+    border-left-color: #8a6d1f;
+    background: #332b12;
+  }
+}
