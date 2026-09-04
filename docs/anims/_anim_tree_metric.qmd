@@ -1,0 +1,218 @@
+```{=html}
+<div class="tm-anim" id="tmAnim">
+
+  <style>
+
+    .tm-anim {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+    border: 1px solid var(--rule, #e2e2e2);
+    border-radius: 6px;
+    padding: 1rem 1rem .8rem;
+    margin: 1rem 0 1.6rem;
+    --halo: #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .tm-anim {
+            --halo: #131313;
+        }
+    }
+
+    .tm-anim svg {
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .tm-anim text {
+        fill: var(--fg, #1a1a1a);
+        font-size: 11.5px;
+        font-family: "SF Mono", Menlo, Consolas, monospace;
+        paint-order: stroke;
+        stroke: var(--halo);
+        stroke-width: 4px;
+        stroke-linejoin: round;
+    }
+
+    .tm-anim .edge {
+        stroke: var(--rule, #d0d0d0);
+        stroke-width: 1.6;
+        fill: none;
+    }
+
+    .tm-anim .edge.on {
+        stroke: var(--accent, #8a4b2a);
+        stroke-width: 3;
+    }
+
+    .tm-anim .node circle {
+        stroke: var(--halo);
+        stroke-width: 2;
+        cursor: pointer;
+    }
+
+    .tm-anim .node.sel circle {
+        stroke: var(--fg, #1a1a1a);
+        stroke-width: 2.5;
+    }
+
+    .tm-anim .node.lca circle {
+        stroke: var(--accent, #8a4b2a);
+        stroke-width: 3;
+    }
+
+    .tm-anim .node text {
+        pointer-events: none;
+    }
+
+    .tm-anim .hit {
+        fill: transparent;
+        cursor: pointer;
+    }
+
+    .tm-anim .readout {
+        text-align: center;
+        font-size: .85rem;
+        margin-top: .5rem;
+        color: var(--muted, #666);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .tm-anim .readout .eq {
+        font-family: "SF Mono", Menlo, Consolas, monospace;
+        color: var(--fg, #1a1a1a);
+        font-size: .9rem;
+    }
+
+    .tm-anim .readout .lab {
+        display: inline-block;
+        min-width: 3.2em;
+    }
+
+    .tm-anim .hint {
+        text-align: center;
+        font-size: .75rem;
+        color: var(--muted, #666);
+        margin-top: .35rem;
+    }
+  </style>
+ 
+  <svg viewBox="0 0 560 340" width="560" role="img"
+       aria-label="a syntax tree; select two nodes to see the path between them">
+    <g id="tmEdges"></g><g id="tmNodes"></g>
+  </svg>
+ 
+  <div class="readout" id="tmOut"></div>
+  <div class="hint">click a node to move the first marker, click another for the second</div>
+ 
+  <script>
+    (function () {
+    var root = document.getElementById("tmAnim");
+    var SVG = "http://www.w3.org/2000/svg";
+
+    // id, label, depth, x, y, parent
+    var N = [
+        ["mod", "module", 0, 280, 28, null],
+        ["cls", "class Vec", 1, 280, 96, "mod"],
+        ["ini", "__init__", 2, 148, 164, "cls"],
+        ["sx", "self.x = x", 3, 78, 232, "ini"],
+        ["sy", "self.y = y", 3, 212, 232, "ini"],
+        ["nrm", "norm", 2, 408, 164, "cls"],
+        ["t0", "t = 0", 3, 318, 232, "nrm"],
+        ["for", "for c in self", 3, 424, 232, "nrm"],
+        ["acc", "t += c*c", 4, 424, 300, "for"],
+        ["ret", "return", 3, 516, 232, "nrm"]
+    ];
+    var by = {};
+    N.forEach(function (n) {
+        by[n[0]] = {
+            id: n[0], label: n[1], depth: n[2],
+            x: n[3], y: n[4], parent: n[5]
+        };
+    });
+
+    var gE = document.getElementById("tmEdges"), gN = document.getElementById("tmNodes");
+    var edgeEl = {};
+
+    N.forEach(function (n) {
+        var v = by[n[0]];
+        if (v.parent) {
+            var p = by[v.parent];
+            var e = document.createElementNS(SVG, "line");
+            e.setAttribute("x1", p.x); e.setAttribute("y1", p.y + 8);
+            e.setAttribute("x2", v.x); e.setAttribute("y2", v.y - 8);
+            e.setAttribute("class", "edge");
+            gE.appendChild(e); edgeEl[v.id] = e;
+        }
+        var g = document.createElementNS(SVG, "g");
+        g.setAttribute("class", "node"); g.setAttribute("data-id", v.id);
+        var c = document.createElementNS(SVG, "circle");
+        c.setAttribute("cx", v.x); c.setAttribute("cy", v.y); c.setAttribute("r", 7);
+        c.setAttribute("fill", "var(--muted, #999)");
+        var t = document.createElementNS(SVG, "text");
+        t.setAttribute("x", v.x); t.setAttribute("y", v.y + 21);
+        t.setAttribute("text-anchor", "middle");
+        t.textContent = v.label;
+        var hit = document.createElementNS(SVG, "circle");   
+        hit.setAttribute("cx", v.x); hit.setAttribute("cy", v.y); hit.setAttribute("r", 18);
+        hit.setAttribute("class", "hit");
+        g.appendChild(c); g.appendChild(t); g.appendChild(hit);
+        gN.appendChild(g);
+        g.addEventListener("click", function () { pick(v.id); });
+    });
+
+    function chain(id) {                 
+        var out = [];
+        while (id) { out.push(id); id = by[id].parent; }
+        return out;
+    }
+    function lcaOf(a, b) {
+        var A = chain(a), inA = {};
+        A.forEach(function (x) { inA[x] = 1; });
+        var c = b;
+        while (c && !inA[c]) c = by[c].parent;
+        return c;
+    }
+
+    var A = "sx", B = "acc", next = 0;
+    function pick(id) {
+        if (next === 0) { A = id; next = 1; } else { B = id; next = 0; }
+        draw();
+    }
+
+    function draw() {
+        var L = lcaOf(A, B);
+        var on = {};
+        var c = A; while (c && c !== L) { on[c] = 1; c = by[c].parent; }
+        c = B; while (c && c !== L) { on[c] = 1; c = by[c].parent; }
+
+        Object.keys(edgeEl).forEach(function (k) {
+            edgeEl[k].setAttribute("class", on[k] ? "edge on" : "edge");
+        });
+        root.querySelectorAll(".node").forEach(function (g) {
+            var id = g.getAttribute("data-id");
+            g.setAttribute("class", "node" + (id === L ? " lca" : "") +
+                (id === A || id === B ? " sel" : ""));
+            var fill = "var(--muted, #999)";
+            if (id === A || id === B) fill = "var(--accent, #8a4b2a)";
+            else if (id === L) fill = "var(--fg, #1a1a1a)";
+            else if (on[id]) fill = "var(--fg, #666)";
+            g.querySelector("circle").setAttribute("fill", fill);
+        });
+
+        var da = by[A].depth, db = by[B].depth, dl = by[L].depth;
+        var d = da + db - 2 * dl;
+        document.getElementById("tmOut").innerHTML =
+            "<span class='lab'>a</span> <b>" + by[A].label + "</b> at depth " + da +
+            " &nbsp;&nbsp; <span class='lab'>b</span> <b>" + by[B].label + "</b> at depth " + db +
+            " &nbsp;&nbsp; <span class='lab'>lca</span> <b>" + by[L].label + "</b> at depth " + dl +
+            "<br><span class='eq'>d<sub>T</sub>(a,b) = " + da + " + " + db +
+            " &minus; 2&middot;" + dl + " = <b>" + d + "</b></span> edges";
+    }
+    draw();
+    })();
+  </script>
+
+</div>
+```

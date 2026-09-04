@@ -126,6 +126,36 @@ equations I find in the literature.
 
 {{< include anims/_anim_AST.qmd >}} 
 
+## Why Hyperbolic space for code 
+
+    The argument for this has three parts that need to be addressed : 
+        1. Code of any sort is tree shaped (shown above in a brief)
+        2. Trees are a metric that Euclidean spaces are not the best at hosting 
+        3. Hyperbolic geometry might be a good choice to why I should choose it for this project 
+
+### [Prerequisite] - Distance inside a tree : 
+
+    The distance between two points on a tree is defined by their lowest Common Ancestor . Why ? well because one is that the path that you would have to take to get to each node is forces through that common node . For example : if you had to get from one node to the other , you would have to first climb back up to that common ancestor and then climb back down to the other node . 
+
+    Here is a formal mathematical formula defining this : 
+
+    $$
+        d_T(a,b) \;=\; \operatorname{depth}(a) + \operatorname{depth}(b) - 2\,\operatorname{depth}\!\big(\operatorname{lca}(a,b)\big)
+    $$
+
+    The depth to any node on the tree could be thought of as a reference to a linked list node , it is easy to compute and beneficial to store . 
+
+    But, the lowest common ancestor that is the property of a pair , that cannot be stored for every single possible combination of pairs in existence . Thus , that is what actually carries the shape of a tree and any embedding of a code that fails to represent this has kept the decorative part and thrown away the actual information like a dangling pointer in familiar terms . 
+
+    Here is an animation to make this visualization easier : 
+
+    {{< include anims/_anim_tree_metric.qmd >}}
+
+### [Prerequisite] - What a python Abstract Syntax Tree actually looks like : 
+
+    
+
+
 ## References
 
 ::: {#refs}
