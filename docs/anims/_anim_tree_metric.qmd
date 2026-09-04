@@ -66,28 +66,63 @@
         pointer-events: none;
     }
 
-    .tm-anim .hit {
-        fill: transparent;
-        cursor: pointer;
-    }
-
     .tm-anim .readout {
-        text-align: center;
-        font-size: .85rem;
-        margin-top: .5rem;
-        color: var(--muted, #666);
-        font-variant-numeric: tabular-nums;
+        margin-top: .9rem;
+        padding-top: .7rem;
+        border-top: 1px solid var(--rule, #e2e2e2);
     }
 
-    .tm-anim .readout .eq {
+    .tm-anim .stats {
+        display: flex;
+        justify-content: center;
+        gap: .5rem;
+        flex-wrap: wrap;
+    }
+
+    .tm-anim .stat {
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .3rem .6rem;
+        border: 1px solid var(--rule, #e2e2e2);
+        border-radius: 999px;
+        font-size: .8rem;
+    }
+
+    .tm-anim .stat .tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.4em;
+        padding: .05rem .35rem;
+        border-radius: 999px;
+        font-family: "SF Mono", Menlo, Consolas, monospace;
+        font-size: .72rem;
+        font-weight: 600;
+        color: #fff;
+        background: var(--muted, #999);
+    }
+
+    .tm-anim .stat .tag.lca {
+        background: var(--accent, #8a4b2a);
+    }
+
+    .tm-anim .stat .val {
         font-family: "SF Mono", Menlo, Consolas, monospace;
         color: var(--fg, #1a1a1a);
-        font-size: .9rem;
     }
 
-    .tm-anim .readout .lab {
-        display: inline-block;
-        min-width: 3.2em;
+    .tm-anim .stat .depth {
+        color: var(--muted, #666);
+    }
+
+    .tm-anim .eqbox {
+        text-align: center;
+        margin-top: .6rem;
+        font-family: "SF Mono", Menlo, Consolas, monospace;
+        font-size: .9rem;
+        color: var(--fg, #1a1a1a);
+        font-variant-numeric: tabular-nums;
     }
 
     .tm-anim .hint {
@@ -97,21 +132,20 @@
         margin-top: .35rem;
     }
   </style>
- 
+
   <svg viewBox="0 0 560 340" width="560" role="img"
        aria-label="a syntax tree; select two nodes to see the path between them">
     <g id="tmEdges"></g><g id="tmNodes"></g>
   </svg>
- 
+
   <div class="readout" id="tmOut"></div>
   <div class="hint">click a node to move the first marker, click another for the second</div>
- 
+
   <script>
     (function () {
     var root = document.getElementById("tmAnim");
     var SVG = "http://www.w3.org/2000/svg";
 
-    // id, label, depth, x, y, parent
     var N = [
         ["mod", "module", 0, 280, 28, null],
         ["cls", "class Vec", 1, 280, 96, "mod"],
@@ -148,21 +182,18 @@
         var g = document.createElementNS(SVG, "g");
         g.setAttribute("class", "node"); g.setAttribute("data-id", v.id);
         var c = document.createElementNS(SVG, "circle");
-        c.setAttribute("cx", v.x); c.setAttribute("cy", v.y); c.setAttribute("r", 7);
+        c.setAttribute("cx", v.x); c.setAttribute("cy", v.y); c.setAttribute("r", 9);
         c.setAttribute("fill", "var(--muted, #999)");
         var t = document.createElementNS(SVG, "text");
         t.setAttribute("x", v.x); t.setAttribute("y", v.y + 21);
         t.setAttribute("text-anchor", "middle");
         t.textContent = v.label;
-        var hit = document.createElementNS(SVG, "circle");   
-        hit.setAttribute("cx", v.x); hit.setAttribute("cy", v.y); hit.setAttribute("r", 18);
-        hit.setAttribute("class", "hit");
-        g.appendChild(c); g.appendChild(t); g.appendChild(hit);
+        g.appendChild(c); g.appendChild(t);
         gN.appendChild(g);
         g.addEventListener("click", function () { pick(v.id); });
     });
 
-    function chain(id) {                 
+    function chain(id) {
         var out = [];
         while (id) { out.push(id); id = by[id].parent; }
         return out;
@@ -204,11 +235,12 @@
         var da = by[A].depth, db = by[B].depth, dl = by[L].depth;
         var d = da + db - 2 * dl;
         document.getElementById("tmOut").innerHTML =
-            "<span class='lab'>a</span> <b>" + by[A].label + "</b> at depth " + da +
-            " &nbsp;&nbsp; <span class='lab'>b</span> <b>" + by[B].label + "</b> at depth " + db +
-            " &nbsp;&nbsp; <span class='lab'>lca</span> <b>" + by[L].label + "</b> at depth " + dl +
-            "<br><span class='eq'>d<sub>T</sub>(a,b) = " + da + " + " + db +
-            " &minus; 2&middot;" + dl + " = <b>" + d + "</b></span> edges";
+            "<div class='stats'>" +
+                "<div class='stat'><span class='tag'>a</span><span class='val'>" + by[A].label + "</span><span class='depth'>depth " + da + "</span></div>" +
+                "<div class='stat'><span class='tag'>b</span><span class='val'>" + by[B].label + "</span><span class='depth'>depth " + db + "</span></div>" +
+                "<div class='stat'><span class='tag lca'>lca</span><span class='val'>" + by[L].label + "</span><span class='depth'>depth " + dl + "</span></div>" +
+            "</div>" +
+            "<div class='eqbox'>d<sub>T</sub>(a,b) = " + da + " + " + db + " &minus; 2&middot;" + dl + " = <b>" + d + "</b> edges</div>";
     }
     draw();
     })();
